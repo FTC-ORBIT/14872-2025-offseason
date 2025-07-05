@@ -7,10 +7,10 @@ public enum ElevatorState {
     MANUAL(0),
     CHAMBER(0);
 
-    public int wantedPosition;
+    public int wantedLength;
 
-    private ElevatorState(final int wantedPosition) {
-        this.wantedPosition = wantedPosition;
+    private ElevatorState(final int wantedLength) {
+        this.wantedLength = wantedLength;
     }
 
 }

@@ -29,19 +29,28 @@ public class Elevator {
         telemetry.update();
     }
 
-    public void operate(final Gamepad gamepad) {
-        elevatorMotor.setPower(-0.3 * gamepad.left_stick_y);
+    public void operate() {
+        elevatorPID.setWanted(state.wantedLength);
+        elevatorMotor.setPower(elevatorPID.update(getLength()));
     }
 
+    public float getLength(){
+        return elevatorMotor.getCurrentPosition() / ElevatorConstants.tickPerCm;
+    }
     private void updateFromJoystick(final Gamepad gamepad) {
-        if(gamepad.x) {
+        if(gamepad.a) {
             state = ElevatorState.INTAKE;
-        } else if (gamepad.circle) {
+        } else if (gamepad.b) {
             state = ElevatorState.TRAVEL;
-        } else if (gamepad.triangle) {
+        } else if (gamepad.y) {
             state = ElevatorState.BASKET;
-        } else if (gamepad.square) {
+        } else if (gamepad.x) {
             state = ElevatorState.CHAMBER;
         }
+    }
+
+    public void test(final Gamepad gamepad){
+        updateFromJoystick(gamepad);
+        operate();
     }
 }
