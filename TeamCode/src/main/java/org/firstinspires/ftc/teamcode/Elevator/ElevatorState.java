@@ -2,14 +2,12 @@ package org.firstinspires.ftc.teamcode.Elevator;
 
 public enum ElevatorState {
     TRAVEL(0),
-    INTAKE(0),
-    BASKET(0),
-    MANUAL(0),
-    CHAMBER(0);
+    INTAKE(0) /* TODO need to implement override */,
+    BASKET(21),
+    CHAMBER(16);
 
-    public int wantedLength;
-
-    private ElevatorState(final int wantedLength) {
+    public final int wantedLength;
+    ElevatorState(final int wantedLength) {
         this.wantedLength = wantedLength;
     }
 

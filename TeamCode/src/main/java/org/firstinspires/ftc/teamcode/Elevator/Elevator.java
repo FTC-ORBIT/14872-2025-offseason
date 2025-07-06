@@ -6,17 +6,19 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.MathFuncs;
 
 public class Elevator {
     private DcMotor elevatorMotor;
     private ElevatorState state = ElevatorState.TRAVEL;
-    private PID elevatorPID = new PID(0.005, 0,0,0,0);
+    private final PID elevatorPID = new PID(0.2, 0,0,0,0);
     private int posA = 0;
 
     public void init(final HardwareMap hardwareMap) {
         elevatorMotor = hardwareMap.get(DcMotor.class, "elevatorMotor");
 
         elevatorMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        elevatorMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevatorMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         elevatorMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
@@ -30,7 +32,8 @@ public class Elevator {
     }
 
     public void operate() {
-        elevatorPID.setWanted(state.wantedLength);
+        final float wantedLength = MathFuncs.limit(ElevatorConstants.maxLength,state.wantedLength);
+        elevatorPID.setWanted(wantedLength);
         elevatorMotor.setPower(elevatorPID.update(getLength()));
     }
 
@@ -52,5 +55,11 @@ public class Elevator {
     public void test(final Gamepad gamepad){
         updateFromJoystick(gamepad);
         operate();
+    }
+
+    public void tune(Telemetry telemetry){
+        telemetry.addData("pos",elevatorMotor.getCurrentPosition());
+        telemetry.addData("length",getLength());
+        telemetry.update();
     }
 }

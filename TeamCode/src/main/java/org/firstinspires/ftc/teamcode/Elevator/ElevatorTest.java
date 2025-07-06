@@ -19,6 +19,7 @@ public class ElevatorTest extends LinearOpMode {
         //loop
         while (!isStopRequested()) {
             elevator.test(gamepad1);
+            elevator.tune(telemetry);
         }
     }
 }
