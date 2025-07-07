@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.endeffector;
+package org.firstinspires.ftc.teamcode.robotSubSystems.endeffector;
 
 public enum EndEffectorStates {
     COLLECT(1),

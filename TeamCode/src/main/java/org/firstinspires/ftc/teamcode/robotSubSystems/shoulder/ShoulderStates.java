@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.robotSubSystems.shoulder;
 
 public enum ShoulderStates {
     TRAVEL(0),

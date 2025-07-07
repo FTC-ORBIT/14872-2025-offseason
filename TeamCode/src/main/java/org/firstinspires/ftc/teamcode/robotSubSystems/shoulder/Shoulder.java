@@ -1,32 +1,39 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.robotSubSystems.shoulder;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.GlobalData;
+import org.firstinspires.ftc.teamcode.robotSubSystems.endeffector.EndEffectorStates;
+import org.firstinspires.ftc.teamcode.utils.PID;
 
 public class Shoulder {
     private static final PID shoulderPID = new PID(0.5,0,0,0.1,0);
     private DcMotor shoulderMotor;
-    private ShoulderStates state = ShoulderStates.TRAVEL;
+    private ShoulderStates state = ShoulderStates.TRAVEL ;
     public void init(final HardwareMap hardwareMap){
         shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
     }
 
-    public void updateState(Gamepad gamepad){
-        if (gamepad.b){
-            state = ShoulderStates.TRAVEL;
-        } else if (gamepad.a) {
-            state = ShoulderStates.INTAKE;
-        } else if (gamepad.x) {
-            state = ShoulderStates.HIGH_CHAMBER;
-        } else if (gamepad.y) {
-            state = ShoulderStates.LOW_BASKET;
+    public  ShoulderStates updateStateFromRobot(){
+        switch (GlobalData.robotState) {
+            case TRAVEL:
+                return ShoulderStates.TRAVEL;
+            case HIGH_CHAMBER:
+                return ShoulderStates.HIGH_CHAMBER;
+            case LOW_BASKET:
+                return ShoulderStates.LOW_BASKET;
+            case INTAKE:
+                return ShoulderStates.INTAKE;
         }
+
+        return state;
     }
 
     public void operate(){
+        state = updateStateFromRobot();
         shoulderPID.setWanted(state.wantedAngle);
         shoulderMotor.setPower(shoulderPID.update(getAngle()));
     }
