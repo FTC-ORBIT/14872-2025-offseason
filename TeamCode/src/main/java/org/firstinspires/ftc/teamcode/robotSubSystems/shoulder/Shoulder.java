@@ -3,18 +3,23 @@ package org.firstinspires.ftc.teamcode.robotSubSystems.shoulder;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.GlobalData;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.robotSubSystems.Elevator.Elevator;
 import org.firstinspires.ftc.teamcode.robotSubSystems.endeffector.EndEffectorStates;
 import org.firstinspires.ftc.teamcode.utils.PID;
 
 public class Shoulder {
     private static final PID shoulderPID = new PID(0.5,0,0,0.1,0);
     private DcMotor shoulderMotor;
+    private Servo servo;
     private ShoulderStates state = ShoulderStates.TRAVEL ;
     public void init(final HardwareMap hardwareMap){
         shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
+//        servo = hardwareMap.get(Servo.class,"shoulderServo");
     }
 
     public  ShoulderStates updateStateFromRobot(){
@@ -34,13 +39,25 @@ public class Shoulder {
 
     public void operate(){
         state = updateStateFromRobot();
-        shoulderPID.setWanted(state.wantedAngle);
+
+        float wantedAngle = state.equals(ShoulderStates.INTAKE) ? GlobalData.wantedIntakeAngle : state.wantedAngle;
+
+        if (state.equals(ShoulderStates.TRAVEL)){
+            wantedAngle = Robot.elevator.getLength()
+                            > ShoulderConstants.minLengthToChangeAngleFromHighBasket
+                    ? ShoulderStates.LOW_BASKET.wantedAngle : state.wantedAngle;
+        }
+
+        shoulderPID.setWanted(wantedAngle);
         shoulderMotor.setPower(shoulderPID.update(getAngle()));
+//        servo.setPosition(state.wantedPos);
     }
 
     public float getAngle(){
         return shoulderMotor.getCurrentPosition() / ShoulderConstants.tickPerRad;
     }
+
+
 
     public void tune(Telemetry telemetry){
         telemetry.addData("pos",shoulderMotor.getCurrentPosition());

@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.robotSubSystems.Elevator;
 
 public enum ElevatorState {
-    TRAVEL(0),
-    INTAKE(0) /* TODO need to implement override */,
-    BASKET(21),
-    CHAMBER(16);
+    TRAVEL(3f),
+    INTAKE(3f) /* TODO need to implement override */,
+    BASKET(28),
+    CHAMBER(21);
 
-    public final int wantedLength;
-    ElevatorState(final int wantedLength) {
+    public final float wantedLength;
+
+    ElevatorState(final float wantedLength) {
         this.wantedLength = wantedLength;
     }
 

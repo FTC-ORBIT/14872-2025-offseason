@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.utils.PID;
 public class Elevator {
     private DcMotor elevatorMotor;
     private ElevatorState state = ElevatorState.TRAVEL;
-    private final PID elevatorPID = new PID(0.2, 0,0,0,0);
+    private final PID elevatorPID = new PID(0.6, 0,0,0,0);
     private int posA = 0;
 
     public void init(final HardwareMap hardwareMap) {
@@ -34,10 +34,12 @@ public class Elevator {
     }
 
     public void operate() {
-//        state = updateFromRobotState();
-        final float wantedLength = MathFuncs.limit(ElevatorConstants.maxLength,state.wantedLength);
+        state = updateFromRobotState();
+        float wantedLength = state.equals(ElevatorState.INTAKE) ? GlobalData.wantedIntakeLength : state.wantedLength;
+        wantedLength = MathFuncs.range(ElevatorConstants.closeLength,ElevatorConstants.maxLength,wantedLength);
         elevatorPID.setWanted(wantedLength);
-        final float power = MathFuncs.limit(0.3f, (float) elevatorPID.update(getLength()));
+        float power = MathFuncs.limit(ElevatorConstants.maxPower, (float) elevatorPID.update(getLength()));
+
         elevatorMotor.setPower(power);
     }
 
