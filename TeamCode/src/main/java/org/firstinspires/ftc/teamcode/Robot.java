@@ -39,6 +39,10 @@ public class Robot extends LinearOpMode {
 
             if (!GlobalData.robotState.equals(GlobalData.lastRobotState)) {
                 GlobalData.deplete = false;
+                GlobalData.waitForTelecsop =
+                        (GlobalData.lastRobotState.equals(RobotState.LOW_BASKET)
+                                || GlobalData.lastRobotState.equals(RobotState.HIGH_CHAMBER))
+                        && GlobalData.robotState.equals(RobotState.TRAVEL);
             }
 
             if (gamepad1.right_bumper && !prevRightBumper) {

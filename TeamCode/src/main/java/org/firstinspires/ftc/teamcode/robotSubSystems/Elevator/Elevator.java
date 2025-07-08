@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.GlobalData;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.robotSubSystems.shoulder.Shoulder;
 import org.firstinspires.ftc.teamcode.utils.MathFuncs;
 import org.firstinspires.ftc.teamcode.utils.PID;
 
@@ -36,6 +38,7 @@ public class Elevator {
     public void operate() {
         state = updateFromRobotState();
         float wantedLength = state.equals(ElevatorState.INTAKE) ? GlobalData.wantedIntakeLength : state.wantedLength;
+        wantedLength = Robot.shoulder.getAngle() > ElevatorConstants.minAngleToOpenElevator ? wantedLength : ElevatorState.TRAVEL.wantedLength;
         wantedLength = MathFuncs.range(ElevatorConstants.closeLength,ElevatorConstants.maxLength,wantedLength);
         elevatorPID.setWanted(wantedLength);
         float power = MathFuncs.limit(ElevatorConstants.maxPower, (float) elevatorPID.update(getLength()));

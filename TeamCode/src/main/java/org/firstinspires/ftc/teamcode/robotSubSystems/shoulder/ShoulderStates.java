@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.robotSubSystems.shoulder;
 
 public enum ShoulderStates {
-    TRAVEL((float) Math.toRadians(10), 0),
-    LOW_BASKET((float) Math.toRadians(115), 0),
-    HIGH_CHAMBER((float) Math.toRadians(115), 0),
-    INTAKE((float) Math.toRadians(10), 0); // need to implement intake Override
+    TRAVEL((float) Math.toRadians(30), 1),
+    LOW_BASKET((float) Math.toRadians(115), 1),
+    HIGH_CHAMBER((float) Math.toRadians(115), 1),
+    INTAKE((float) Math.toRadians(30), 0.5f); // need to implement intake Override
 
     public final float wantedAngle;
     public final float wantedPos;

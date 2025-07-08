@@ -8,18 +8,21 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.GlobalData;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.robotSubSystems.Elevator.Elevator;
-import org.firstinspires.ftc.teamcode.robotSubSystems.endeffector.EndEffectorStates;
+import org.firstinspires.ftc.teamcode.utils.MathFuncs;
 import org.firstinspires.ftc.teamcode.utils.PID;
 
 public class Shoulder {
     private static final PID shoulderPID = new PID(0.5,0,0,0.1,0);
     private DcMotor shoulderMotor;
     private Servo servo;
+
+    private boolean lastRightBumper = false;
+    private boolean lastLeftBumper = false;
+    private float valServoTest = 0;
     private ShoulderStates state = ShoulderStates.TRAVEL ;
     public void init(final HardwareMap hardwareMap){
         shoulderMotor = hardwareMap.get(DcMotor.class,"shoulderMotor");
-//        servo = hardwareMap.get(Servo.class,"shoulderServo");
+        servo = hardwareMap.get(Servo.class,"shoulderServo");
     }
 
     public  ShoulderStates updateStateFromRobot(){
@@ -42,15 +45,15 @@ public class Shoulder {
 
         float wantedAngle = state.equals(ShoulderStates.INTAKE) ? GlobalData.wantedIntakeAngle : state.wantedAngle;
 
-        if (state.equals(ShoulderStates.TRAVEL)){
+        if (GlobalData.waitForTelecsop){
             wantedAngle = Robot.elevator.getLength()
                             > ShoulderConstants.minLengthToChangeAngleFromHighBasket
                     ? ShoulderStates.LOW_BASKET.wantedAngle : state.wantedAngle;
-        }
+      }
 
         shoulderPID.setWanted(wantedAngle);
-        shoulderMotor.setPower(shoulderPID.update(getAngle()));
-//        servo.setPosition(state.wantedPos);
+        shoulderMotor.setPower(MathFuncs.limit(state.equals(ShoulderStates.TRAVEL) ? 0.2f : 0.5F, (float) shoulderPID.update(getAngle())));
+        servo.setPosition(state.wantedPos);
     }
 
     public float getAngle(){
@@ -65,5 +68,22 @@ public class Shoulder {
         telemetry.addData("power", shoulderMotor.getPower());
         telemetry.addData("state",state);
         telemetry.update();
+    }
+
+    public void testServo(Gamepad gamepad1, Telemetry telemetry){
+        if (gamepad1.left_bumper && !lastLeftBumper){
+            valServoTest += 0.03f;
+        } else if (gamepad1.right_bumper && !lastRightBumper) {
+            valServoTest -= 0.03f;
+        }
+
+        valServoTest = Math.abs(gamepad1.left_stick_y);
+
+        servo.setPosition(valServoTest);
+
+        telemetry.addData("pos",servo.getPosition());
+        telemetry.update();
+        lastLeftBumper = gamepad1.left_bumper;
+        lastRightBumper = gamepad1.right_bumper;
     }
 }

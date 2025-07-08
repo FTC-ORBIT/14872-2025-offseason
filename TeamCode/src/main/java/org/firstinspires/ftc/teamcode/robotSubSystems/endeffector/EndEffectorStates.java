@@ -9,4 +9,5 @@ public enum EndEffectorStates {
      EndEffectorStates(final float power){
         this.power = power;
     }
+
 }
