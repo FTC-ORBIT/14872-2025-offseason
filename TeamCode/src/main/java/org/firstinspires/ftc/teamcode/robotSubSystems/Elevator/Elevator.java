@@ -38,7 +38,7 @@ public class Elevator {
     public void operate() {
         state = updateFromRobotState();
         float wantedLength = state.equals(ElevatorState.INTAKE) ? GlobalData.wantedIntakeLength : state.wantedLength;
-        wantedLength = Robot.shoulder.getAngle() > ElevatorConstants.minAngleToOpenElevator ? wantedLength : ElevatorState.TRAVEL.wantedLength;
+        wantedLength = state.equals(ElevatorState.INTAKE) || Robot.shoulder.getAngle() > ElevatorConstants.minAngleToOpenElevator ? wantedLength : ElevatorState.TRAVEL.wantedLength;
         wantedLength = MathFuncs.range(ElevatorConstants.closeLength,ElevatorConstants.maxLength,wantedLength);
         elevatorPID.setWanted(wantedLength);
         float power = MathFuncs.limit(ElevatorConstants.maxPower, (float) elevatorPID.update(getLength()));
